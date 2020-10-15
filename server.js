@@ -2,7 +2,7 @@ const express = require('express');
 const formData = require('express-form-data');
 const path = require('path');
 const config = require('./config');
-const client = require(config.elasticsearch_path_client);
+//const client = require(config.elasticsearch_path_client);
 
 
 //Import Routes Here
@@ -11,15 +11,15 @@ const info = require('./routes/api/info.js')
 
 const app = express(); 
 
-client.ping(
-  function(error) {
-    if (error) {
-        console.error('Elasticsearch cluster is down!');
-    } else {
-        console.log('Elasticsearch is connected');  
-    }
-  }
-);
+// client.ping(
+//   function(error) {
+//     if (error) {
+//         console.error('Elasticsearch cluster is down!');
+//     } else {
+//         console.log('Elasticsearch is connected');  
+//     }
+//   }
+// );
  
 // Init Middleware
 app.use(express.json({ extended: false }))
