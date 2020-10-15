@@ -2,11 +2,8 @@
 > https://www.compose.com/articles/getting-started-with-elasticsearch-and-node/
 
 * Your data should now be ingesting automatically in real-time!
-- async () => {
 
-node --unhandled-rejections=strict
-
-
+* Create index in Elastic Search (sample)
 PUT earthquakes
 {
   "mappings": {
@@ -21,13 +18,14 @@ PUT earthquakes
 
 ** Requirements
 
-Setting up your Node environment
-First, install Node and npm.
+* Setting up your Node environment
+> First, install Node and npm.
 
-You'll need npm and the following Node modules for this walkthrough:
+* You'll need npm and the following Node modules for this walkthrough:
 
-elasticsearch
-get-json
-Install the modules using npm:
+> elasticsearch
+> get-json
 
-npm install elasticsearch get-json  
+* Install the modules using npm:
+
+> npm install elasticsearch get-json  
