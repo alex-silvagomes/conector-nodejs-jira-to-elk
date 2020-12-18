@@ -1,13 +1,10 @@
-
-'use strict'
+//'use strict'
 
 var elasticsearch=require('elasticsearch');
 
+// 'https://[username]:[password]@[server]:[port]/'
 var client = new elasticsearch.Client( {  
-  hosts: [
-    'http://localhost:9200',
-    'https://[username]:[password]@[server]:[port]/'
-  ]
+  node: 'http://localhost:9200'
 });
 
 module.exports = client;

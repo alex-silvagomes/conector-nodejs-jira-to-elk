@@ -5,21 +5,39 @@ const config = require('../../config');
 const express = require('express');
 const router = express.Router();
 const axios = require('axios')
-//const client = require(config.elasticsearch_path_client);
+
+// elasticsearch connection:
+const client_elasticsearch = require('../../elasticsearch/connection/connection');
+
+// jira connection:
+//const client_jira = require('jira/connection/connection');
+
+// Mockup JSON TESTE:
 const URL = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson`;
+
+const 
+
+
+
+
+
+
+
+
+
 
 //================== Official API Call ==================\\
 router.get('/earthquakes', async function (req, res) {
     console.log('Loading Application...')
 
-    var earthquakeObject = null
+    var indexObjetcRequest = null
     
     //res.json('Running Application...')
 
     //setInterval(() => { 
         //======= Check that Elasticsearch is up and running =======\\
         // pingElasticsearch = async () => {
-        //     await client.ping(
+        //     await client_elasticsearch.ping(
         //         function(error,res) {
         //             if (error) {
         //                 console.error('elasticsearch cluster is down!');
@@ -30,7 +48,7 @@ router.get('/earthquakes', async function (req, res) {
         //     );
         // }
 
-    // ====== Get Data From USGS and then index into Elasticsearch
+    // ====== Get Data From DataSource and then index into Elasticsearch
     const indexAllDocs = async () => {
         try {
             console.log('Getting Data From Host')
@@ -52,7 +70,7 @@ router.get('/earthquakes', async function (req, res) {
 
             
             results.map(async results => (
-                earthquakeObject = {
+                indexObjetcRequest = {
                     place: results.properties.place,
                     time: results.properties.time,
                     tiamp: results.properties.time,
@@ -74,23 +92,15 @@ router.get('/earthquakes', async function (req, res) {
                     rms: results.properties.rms,
                     mag: results.properties.mag,
                     magType: results.properties.magType,
-                    type: results.properties.type,
-                    latitude: results.geometry.coordinates[0],
-                    longitude: results.geometry.coordinates[1],
-                    location:
-                        { 
-                            lat: results.geometry.coordinates[1],
-                            lon: results.geometry.coordinates[0],
-                        },
-                    depth: results.geometry.coordinates[2]
+                    type: results.properties.type
                 }
-                // ,await client.index({ 
-                //     index: 'earthquakes',
-                //     id: results.id,
-                //     body: earthquakeObject
-                // }), (err, resp, status) => {
-                //     console.log(resp);
-                // }
+                ,await client_elasticsearch.index({ 
+                    index: 'earthquakes',
+                    id: results.id,
+                    body: indexObjetcRequest
+                }), (err, resp, status) => {
+                    console.log(resp);
+                }
             ));
             
             if (EARTHQUAKES.data.length) {
@@ -99,7 +109,7 @@ router.get('/earthquakes', async function (req, res) {
                 console.log('All Data Has Been Indexed!');
             };
 
-            res.json(earthquakeObject)
+            res.json(indexObjetcRequest)
 
         } catch (err) {
             console.log(err)
@@ -110,7 +120,7 @@ router.get('/earthquakes', async function (req, res) {
 
     //pingElasticsearch()
     indexAllDocs()
-    //}, 120000);
+    
 });
  
 module.exports = router;

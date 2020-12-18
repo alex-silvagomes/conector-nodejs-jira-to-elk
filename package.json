@@ -1,27 +1,9 @@
 {
-  "name": "conector-pipeline-devops",
-  "version": "1.0.0",
-  "description": "Inmetrics S.A - HardTech StrongResult",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server",
-    "server": "nodemon --max-old-space-size=8192 server",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
-  },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@elastic/elasticsearch": "^7.9.1",
-    "agentkeepalive": "^4.0.2",
-    "axios": "^0.19.2",
-    "elasticsearch": "^16.7.1",
-    "express": "^4.17.1",
-    "express-form-data": "^2.0.10",
-    "get-json": "^1.0.1",
-    "log-timestamp": "^0.3.0",
-    "nodemon": "^1.19.2",
+    "axios": "^0.21.0",
+    "node-rest-client": "^1.4.4",
     "request": "^2.88.2",
-    "request-promise": "^4.2.6",
-    "url": "^0.11.0"
-  }
+    "request-promise": "^4.2.6"
+  },
+  "name": "conector-pipeline-devops-nodejs"
 }
