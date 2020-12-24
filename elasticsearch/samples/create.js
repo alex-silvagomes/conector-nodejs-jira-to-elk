@@ -1,7 +1,9 @@
 import { indices } from './connection.js';
 
+
+
 indices.create({  
-  index: 'earthquakes'
+  index: 'tickets'
 },function(err,resp,status) {
   if(err) {
     console.log(err);

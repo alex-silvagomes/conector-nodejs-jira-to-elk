@@ -1,10 +1,10 @@
-//'use strict'
+'use strict'
 
-var elasticsearch=require('elasticsearch');
-
-// 'https://[username]:[password]@[server]:[port]/'
-var client = new elasticsearch.Client( {  
+require('array.prototype.flatmap').shim()
+const { Client } = require('@elastic/elasticsearch')
+const client = new Client({
   node: 'http://localhost:9200'
-});
+})
 
 module.exports = client;
+

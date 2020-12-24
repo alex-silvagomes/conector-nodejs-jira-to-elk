@@ -54,3 +54,8 @@ curl -X GET --user jira@example.com:JIRA_API_TOKEN \
 
 https://confluence.atlassian.com/cloud/api-tokens-938839638.html
    curl -v https://mysite.atlassian.net --user me@example.com:my-api-token
+
+
+
+
+   

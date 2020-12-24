@@ -15,12 +15,6 @@ const client_elasticsearch = require('../../elasticsearch/connection/connection'
 // Mockup JSON TESTE:
 const URL = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson`;
 
-const 
-
-
-
-
-
 
 
 
