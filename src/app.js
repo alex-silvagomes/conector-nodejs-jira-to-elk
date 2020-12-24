@@ -1,9 +1,11 @@
 'use strict'
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 //require('log-timestamp');
 const jiraConnector = new require('./JiraConnector');
 const indexBulk = new require('../elasticsearch/indexBulk');
-const dataTransform = 
+
+
 console.log('Loading ./JiraConnector')
 
 var data

@@ -2,16 +2,18 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 var Client = require('node-rest-client').Client;
 var jiraClient = new Client();
+const config = require('./config');
 
 async function jiraConnectByCookie(){
- 
+    
+    console.log("")
     return new Promise((result, reject) => {
 
         // Provide user credentials, which will be used to log in to JIRA.
         var loginArgs = {
             data: {
-                "username": "m226203",
-                "password": "senha12"
+                "username": config.jira.username,
+                "password": config.jira.password
             },
             headers: {
                 "Content-Type": "application/json"
@@ -20,7 +22,7 @@ async function jiraConnectByCookie(){
 
         // TH   - https://192.168.248.85:8443/rest/auth/1/session
         // PROD - https://jira.bradesco.com.br:8443/rest/auth/1/session
-        jiraClient.post("https://jira.bradesco.com.br:8443/rest/auth/1/session", loginArgs, function(data, response){
+        jiraClient.post(`${config.jira.url}/rest/auth/1/session`, loginArgs, function(data, response){
             
             data.statusCode = response.statusCode
             data.statusMessage = response.statusMessage
@@ -59,7 +61,7 @@ async function searchIssues (pCookieLogged, pStartAt){
             }
         };   
         
-        let URL = `https://jira.bradesco.com.br:8443/rest/api/2/search?username=.&includeInactive=false&startAt=${pStartAt}&maxResults=1000`
+        let URL = `${config.jira.url}/rest/api/2/search?username=.&includeInactive=false&startAt=${pStartAt}&maxResults=1000`
         
         jiraClient.post(`${URL}`, searchArgs, function(searchResult, response) {
             console.log('status code:', response.statusCode);
