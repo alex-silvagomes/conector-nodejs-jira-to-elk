@@ -1,21 +1,3 @@
-> https://medium.com/@webdevmark16/ingesting-real-time-data-into-elasticsearch-with-node-js-a7aa9b5acf8c
-> https://www.compose.com/articles/getting-started-with-elasticsearch-and-node/
-
-* Your data should now be ingesting automatically in real-time!
-
-* Create index in Elastic Search (sample)
-PUT earthquakes
-{
-  "mappings": {
-    "properties": {
-      "location": {
-        "type": "geo_point" 
-      }
-    }
-  }
-}
-
-
 ** Requirements
 
 * Setting up your Node environment
@@ -23,14 +5,25 @@ PUT earthquakes
 
 * You'll need npm and the following Node modules for this walkthrough:
 
-> elasticsearch
-> get-json
 
 * Install the modules using npm:
 
-> npm install elasticsearch get-json  
+> npm install <dependencies> 
 
-
+{
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.10.0",
+    "array.prototype.flatmap": "^1.2.4",
+    "axios": "^0.21.0",
+    "elasticsearch": "^16.7.2",
+    "fs": "^0.0.1-security",
+    "node-rest-client": "^1.4.4",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "split2": "^3.2.2"
+  },
+  "name": "conector-pipeline-devops-nodejs"
+}
 
 
 ** JiraDoc
