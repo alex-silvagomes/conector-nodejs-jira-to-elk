@@ -6,7 +6,8 @@ const split = require('split2')
 async function bulkInsert(objectResults, callback) {
 
     var dateNow = dateFormat(new Date(), "%Y-%m-%d", true)
-    var indexName = `devops-tickets-jira`
+    var indexName = `tickets-jira-${dateNow}`
+    var indexType = `devops-analytics`
 
    
     var indexDocument = [];
@@ -14,8 +15,8 @@ async function bulkInsert(objectResults, callback) {
     for (const item of objectResults) {
         
         var incrementDocument = {
+            doc_as_upsert: true,
             "extractDate" : dateNow,
-            //"_id" : parseInt(item.id),
             "projectName": item.fields.project,
             "summary": item.summary,
             "id": parseInt(item.id),
@@ -42,37 +43,25 @@ async function bulkInsert(objectResults, callback) {
         }
         
 
-
         var jsonStr = JSON.stringify(incrementDocument)
+        indexDocument.push({ "index" : { "_index" : indexName, "_type" : indexType, "_id" : parseInt(item.id)}})
         indexDocument.push(JSON.parse(jsonStr))
     }
 
     var indexDocumentStr = JSON.stringify(indexDocument)
 
    
-    const body = indexDocument.flatMap(doc => [{ index: { _index: indexName} }, doc])
+    //const body = indexDocument.flatMap(doc => [{ index: { _index: indexName} }, doc])
     
     var BulkIndexDocumentsParams = {
-        index: indexName,
+        //index: indexName,
         //type: 'devops-analytics',
         //wait_for_active_shards: 'all',
-        refresh: true,
+        //refresh: true,
         //pipeline: 'dataops-esteira-unificada',
         //require_alias: true,
-        body: body
+        body: indexDocument
     }
-    
-    // const response = await client.update({
-    //     index: indexName,
-    //     type: 'devops-analytics',
-    //     id: '1',
-    //     body: {
-    //       doc: {
-    //         title: 'Updated'
-    //       },
-    //       doc_as_upsert: true
-    //     }
-    //   });
 
     const { body: bulkResponse } = await clientELK.bulk(BulkIndexDocumentsParams)
 
@@ -108,8 +97,6 @@ async function bulkInsert(objectResults, callback) {
 
     callback(bulkResponse)
  
-    
-
     
 
 }
