@@ -5,8 +5,11 @@ const split = require('split2')
 
 async function bulkInsert(objectResults, callback) {
 
-    var dateNow = dateFormat(new Date(), "%Y-%m-%d", true)
-    var indexName = `tickets-jira-${dateNow}`
+    var dateNow = new Date()
+    var dateNowStr = dateFormat(dateNow, "%Y-%m-%d", true)   
+    
+    var extractDate = dateNowStr //new Date().toGMTString() //Date.UTC(dateNow.getFullYear(), mês, dia, 0, 0, 0, 0)
+    var indexName = `tickets-jira-${dateNowStr}`
     var indexType = `devops-analytics`
 
    
@@ -14,17 +17,23 @@ async function bulkInsert(objectResults, callback) {
 
     for (const item of objectResults) {
         
+        
+        let created_date = new Date(item.fields.created);
+        let updated_date = new Date(item.fields.updated);
+        let cycle_time_in_minutes = diff_minutes(created_date, updated_date)
+        
+
         var incrementDocument = {
             doc_as_upsert: true,
-            "extractDate" : dateNow,
+            "extractDate" : extractDate,
             "projectName": item.fields.project,
             "summary": item.summary,
             "id": parseInt(item.id),
             "key": item.key,
             "self": item.self,
-            "created": item.fields.created,
+            "created": created_date,
             "creator": item.fields.creator,
-            "updated": item.fields.updated,
+            "updated": updated_date,
             "fields": {
                 "Status": item.fields.status.name,
                 "Pipeline": item.fields.customfield_11801,
@@ -38,7 +47,10 @@ async function bulkInsert(objectResults, callback) {
                 "InstaladoAntigoTI": item.fields.customfield_11824,
                 "InstaladoTH": item.fields.customfield_11827,
                 "InstaladoProducao": item.fields.customfield_11825,
-                "NumeroSequenciaPPMC": item.fields.customfield_12203
+                "NumeroSequenciaPPMC": item.fields.customfield_12203 
+            },
+            "metrics": {
+                "cycle_time_in_minutes": cycle_time_in_minutes
             }
         }
         
@@ -118,6 +130,14 @@ function dateFormat(date, fstr, utc) {
         // add leading zero if required
         return ('0' + m).slice(-2);
     });
+}
+
+function diff_minutes(startDate, endDate) {
+
+  var diff = ( endDate.getTime() - startDate.getTime() ) / 1000;
+  diff /= 60;
+  return Math.abs(Math.round(diff));
+  
 }
 
 module.exports = {
