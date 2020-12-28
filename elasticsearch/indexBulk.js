@@ -21,7 +21,13 @@ async function bulkInsert(objectResults, callback) {
         let created_date = new Date(item.fields.created);
         let updated_date = new Date(item.fields.updated);
         let cycle_time_in_minutes = diff_minutes(created_date, updated_date)
+        // let changelog = item.changelog.histories
         
+        // let errorsCount = 0
+        // for (const changelogItem of changelog) {
+        //     errorsCount += changelogItem 
+        //     changelogItem.filter(x => x.name.includes('RC'))
+        // }
 
         var incrementDocument = {
             doc_as_upsert: true,
@@ -41,19 +47,19 @@ async function bulkInsert(objectResults, callback) {
                 "CentroDeCusto": item.fields.customfield_11807,
                 "TipoMudanca": item.fields.customfield_11803,
                 "RDMNumber": item.fields.customfield_11800,
+                "NumeroSequenciaPPMC": item.fields.customfield_12203,
                 "Ambiente": item.fields.customfield_11818,
                 "InstaladoTU": item.fields.customfield_11826,
                 "InstaladoTI": item.fields.customfield_11828,
                 "InstaladoAntigoTI": item.fields.customfield_11824,
                 "InstaladoTH": item.fields.customfield_11827,
-                "InstaladoProducao": item.fields.customfield_11825,
-                "NumeroSequenciaPPMC": item.fields.customfield_12203 
+                "InstaladoProducao": item.fields.customfield_11825                 
             },
             "metrics": {
                 "cycle_time_in_minutes": cycle_time_in_minutes
             }
         }
-        
+        //transitions[0].name.includes("CANCELAR TE")
 
         var jsonStr = JSON.stringify(incrementDocument)
         indexDocument.push({ "index" : { "_index" : indexName, "_type" : indexType, "_id" : parseInt(item.id)}})

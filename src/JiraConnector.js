@@ -57,11 +57,21 @@ async function searchIssues (pCookieLogged, pStartAt){
                 // Provide additional data for the JIRA search. You can modify the JQL to search for whatever you want.
                 jql: "type=TICKET",
                 maxResults: 1000,
-                startAt: pStartAt                 
+                startAt: pStartAt,                
+                fields: [
+                    "*all"
+                ]
+                // ,expand: [
+                //     "changelog"
+                //     //"fields",
+                //     //"transitions",
+                //     //"history"
+                // ] 
             }
         };   
         
-        let URL = `${config.jira.url}/rest/api/2/search?username=.&includeInactive=false&startAt=${pStartAt}&maxResults=1000`
+        //let URL = `${config.jira.url}/rest/api/2/search?username=.&includeInactive=false&startAt=${pStartAt}&maxResults=1000`
+        let URL = `${config.jira.url}/rest/api/2/search`
         
         jiraClient.post(`${URL}`, searchArgs, function(searchResult, response) {
             console.log('status code:', response.statusCode);
