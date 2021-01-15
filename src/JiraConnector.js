@@ -20,8 +20,8 @@ async function jiraConnectByCookie(){
             }
         };
 
-        // TH   - https://192.168.248.85:8443/rest/auth/1/session
-        // PROD - https://jira.bradesco.com.br:8443/rest/auth/1/session
+        
+        // https://<HOST>:<PORT>/rest/auth/1/session
         jiraClient.post(`${config.jira.url}/rest/auth/1/session`, loginArgs, function(data, response){
             
             data.statusCode = response.statusCode
@@ -29,8 +29,7 @@ async function jiraConnectByCookie(){
 
             if (data.statusCode == 200) {
                 console.log('succesfully logged in, session:', data.session);
-                //var session = data.session;
-                
+                               
                 result(data)
 
             } else {
@@ -61,16 +60,9 @@ async function searchIssues (pCookieLogged, pStartAt){
                 fields: [
                     "*all"
                 ]
-                // ,expand: [
-                //     "changelog"
-                //     //"fields",
-                //     //"transitions",
-                //     //"history"
-                // ] 
             }
         };   
         
-        //let URL = `${config.jira.url}/rest/api/2/search?username=.&includeInactive=false&startAt=${pStartAt}&maxResults=1000`
         let URL = `${config.jira.url}/rest/api/2/search`
         
         jiraClient.post(`${URL}`, searchArgs, function(searchResult, response) {
@@ -78,21 +70,12 @@ async function searchIssues (pCookieLogged, pStartAt){
             searchResult.statusCode = response.statusCode
             searchResult.statusMessage = response.statusMessage
 
-            //?jql=SOME_JQL&amp;fields=summary,duedate,issuetype&amp;startAt=51
-
             // Make the request return the search results, passing the header information including the cookie.
             
             if (response.statusCode == 200){
                 console.log('search result:', searchResult);
                 result(searchResult)
             }else{
-                // console.log("Response Status Code = " + respStatusCode);
-                // console.log("Response Header:");
-                // console.log(rest.ResponseHeader);
-                // console.log("Response Body:");
-                // console.log(sbResponseBody.GetAsString());
-                // return;
-
                 reject(response)
             }
         });  

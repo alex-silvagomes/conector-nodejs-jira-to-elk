@@ -2,6 +2,7 @@
 const clientELK = require('./connection/connection');
 const { createReadStream } = require('fs')
 const split = require('split2')
+const jiraConfig = require('../src/config');
 
 async function bulkInsert(objectResults, callback) {
 
@@ -9,7 +10,8 @@ async function bulkInsert(objectResults, callback) {
     var dateNowStr = dateFormat(dateNow, "%Y-%m-%d", true)   
     
     var extractDate = dateNowStr //new Date().toGMTString() //Date.UTC(dateNow.getFullYear(), mês, dia, 0, 0, 0, 0)
-    var indexName = `tickets-jira-${dateNowStr}`
+    //var indexName = `tickets-jira-${dateNowStr}`
+    var indexName = `tickets-jira`
     var indexType = `devops-analytics`
 
    
@@ -20,9 +22,15 @@ async function bulkInsert(objectResults, callback) {
         
         let created_date = new Date(item.fields.created);
         let updated_date = new Date(item.fields.updated);
-        let cycle_time_in_minutes = diff_minutes(created_date, updated_date)
-        // let changelog = item.changelog.histories
+        let cycle_time_in_minutes = 0
+        let InstaladoProducao = item.fields.customfield_11825
+        let UrlJiraTicket = `${jiraConfig.jira.url}/browse/${item.key}`  
         
+        // let changelog = item.changelog.histories
+        if (InstaladoProducao && InstaladoProducao.value.includes("Sim")){
+            cycle_time_in_minutes = diff_minutes(created_date, updated_date)
+        }
+
         // let errorsCount = 0
         // for (const changelogItem of changelog) {
         //     errorsCount += changelogItem 
@@ -37,6 +45,7 @@ async function bulkInsert(objectResults, callback) {
             "id": parseInt(item.id),
             "key": item.key,
             "self": item.self,
+            "UrlJiraTicket": UrlJiraTicket,
             "created": created_date,
             "creator": item.fields.creator,
             "updated": updated_date,
@@ -53,7 +62,7 @@ async function bulkInsert(objectResults, callback) {
                 "InstaladoTI": item.fields.customfield_11828,
                 "InstaladoAntigoTI": item.fields.customfield_11824,
                 "InstaladoTH": item.fields.customfield_11827,
-                "InstaladoProducao": item.fields.customfield_11825                 
+                "InstaladoProducao": InstaladoProducao                 
             },
             "metrics": {
                 "cycle_time_in_minutes": cycle_time_in_minutes
@@ -118,8 +127,6 @@ async function bulkInsert(objectResults, callback) {
     
 
 }
-
-
 
 function dateFormat(date, fstr, utc) {
     utc = utc ? 'getUTC' : 'get';
