@@ -41,7 +41,7 @@ async function jiraConnectByCookie(){
 }
 
 
-async function searchIssues (pCookieLogged, pStartAt){
+async function searchIssues (pCookieLogged, startAt, maxResults){
     
     return new Promise((result, reject) => {
 
@@ -55,8 +55,8 @@ async function searchIssues (pCookieLogged, pStartAt){
             data: {
                 // Provide additional data for the JIRA search. You can modify the JQL to search for whatever you want.
                 jql: "type=TICKET",
-                maxResults: 1000,
-                startAt: pStartAt,                
+                maxResults: maxResults,
+                startAt: startAt,                
                 fields: [
                     "*all"
                 ]

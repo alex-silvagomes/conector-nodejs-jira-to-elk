@@ -23,11 +23,13 @@ callJiraConnector(function (status_code, status_message, cookie) {
 
 
     // TODO: Loop de chamadas de todos os issues restantes. 
-    var pStartAt = 0
-    var maxResults 
-    var total 
-    var startAt 
-    callJiraSearchIssues(pStartAt, function (status_code, status_message, results) {
+    var maxResults = 1000
+    var total = maxResults
+    var startAt = 0
+    
+
+            
+    callJiraSearchIssues(startAt, maxResults, function (status_code, status_message, results) {
         
         if (status_code == 200) {
 
@@ -44,6 +46,7 @@ callJiraConnector(function (status_code, status_message, cookie) {
             throw `status_code: ${status_code} - ${status_message}`
         }
     });
+
 });
 
 async function callJiraConnector(callback) {
@@ -68,12 +71,12 @@ async function callJiraConnector(callback) {
 
 }
 
-async function callJiraSearchIssues(pStartAt, callback) {
+async function callJiraSearchIssues(startAt, maxResults, callback) {
     var status_code
     var status_message
     var error_message
 
-    await jiraConnector.searchIssues(cookieLogged, pStartAt).then((result) => {
+    await jiraConnector.searchIssues(cookieLogged, startAt, maxResults).then((result) => {
         status_code = result.statusCode
         status_message = result.statusMessage
 
