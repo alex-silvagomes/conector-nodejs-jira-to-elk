@@ -1,47 +1,83 @@
 // 'use strict'
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
+//require('log-timestamp');
 const jiraConnector = new require('./JiraConnector');
 const indexBulk = new require('../elasticsearch/indexBulk');
 
 
 console.log('Loading ./JiraConnector')
 
-callJiraConnector(function (status_code, status_message, dataset) {
+var data
+var erroLogin
+var cookieLogged
 
+
+
+
+callJiraConnector(function (status_code, status_message, cookie) {
+
+    // [deprecated] Cookie de conexao Jira para as proximas chamadas.
     if (status_code == 200) {
         console.log("CONNECTED:", status_code)
     } else {
         throw `status_code: ${status_code} - ${status_message}`
     }
+
+
+    // TODO: Loop de chamadas de todos os issues restantes. 
+    var maxResults = 1000
+    var total = maxResults
+    var startAt = 0
+
+    callJiraSearchIssues(startAt, maxResults, function (status_code, status_message, results) {
+        
+        if (status_code == 200) {
+
+            maxResults = results.maxResults
+            total = results.total
+            startAt = results.startAt
+
+            // TODO: Inserir os dados no Index ElasticSearch
+            callIndexToELK(results.issues, function (responseELK) {
+                console.log(`response elasticsearch: ${responseELK}`)
+                
+            });
+        } else {
+            throw `status_code: ${status_code} - ${status_message}`
+        }
+    });
+
 });
 
 async function callJiraConnector(callback) {
     var status_code
     var status_message
+    var error_message
+    var cookie
 
-    // GetIssuesFromProject:
     await jiraConnector.jiraGetIssuesFromProject().then((result) => {
         status_code = result.statusCode
         status_message = result.statusMessage
-        
-        callback(status_code, status_message, dataset);
+        cookie = result.session
+
+        callback(status_code, status_message, cookie);
 
     }).catch((reject) => {
         status_code = reject.statusCode
         status_message = reject.errorMessages
         console.log("ERROR:",status_code,status_message)
-        callback(status_code, status_message, dataset);
+        callback(status_code, status_message, cookie);
     });
 
 }
 
-async function callJiraGetIssuesFromProject(startAt, maxResults, callback) {
+async function callJiraSearchIssues(startAt, maxResults, callback) {
     var status_code
     var status_message
     var error_message
 
-    await jiraConnector.jiraGetIssuesFromProject(cookieLogged, startAt, maxResults).then((result) => {
+    await jiraConnector.searchIssues(cookieLogged, startAt, maxResults).then((result) => {
         status_code = result.statusCode
         status_message = result.statusMessage
 

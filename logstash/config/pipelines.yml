@@ -1,0 +1,6 @@
+# config/pipelines.yml
+- pipeline.id: pipeline_etlfunds
+  path.config: "/usr/share/logstash/pipeline/pipeline_etlfunds.conf"
+
+# - pipeline.id: pipeline_jira
+#   path.config: "/usr/share/logstash/pipeline/pipeline_jira.conf"

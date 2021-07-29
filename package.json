@@ -1,9 +1,10 @@
 {
+  "name": "conector-nodejs-jira-to-elk",
   "dependencies": {
     "@elastic/elasticsearch": "^7.10.0",
     "array.prototype.flatmap": "^1.2.4",
+    "node-fetch": "^2.6.1",
     "node-rest-client": "^1.4.4",
     "split2": "^3.2.2"
-  },
-  "name": "conector-pipeline-devops-nodejs"
+  }
 }

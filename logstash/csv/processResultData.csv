@@ -1,0 +1,3 @@
+#TYPE System.Management.Automation.PSCustomObject
+"resource","rotina","numero_sequencia","result_api_status","qtde_request_simul","beginDateTime","endDateTime","tps","elapsed_timespan","response_time_in_seconds","rest_url"
+"ACEITE","ALTR","2019-0511627-5-008","sucesso","10","2021-02-11 15:46:25","2021-02-11 15:48:15","0,0909090909090909","00:01:50","110","http://localhost:3000/api/quality-gate/ACEITE/?rotina=ALTR&numero_sequencia=2019-0511627-5-008&data_ultima_compilacao=2016-01-01&rdm_status=SOLICITADA&rdm_categoria=MINIMA&rdm_prioridade=MEDIA&rdm_departamento=DS&rdm_tipo=PROJETO"

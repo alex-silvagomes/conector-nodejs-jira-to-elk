@@ -1,64 +1,142 @@
-# # ./docker-compose.yml
-
 version: '3.6'
 
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
-    container_name: elasticsearch
-    environment:
-      - cluster.name=docker-cluster
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - xpack.ml.enabled=false      
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
     ports:
-      - 9200:9200
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx2g -Xms2g"
+      ELASTIC_PASSWORD: inmadmin
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
     networks:
-      - esnet
+      - elk
+
+  logstash:
+    build:
+      context: logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./logstash/config/pipelines.yml
+        target: /usr/share/logstash/config/pipelines.yml
+        read_only: true
+      - type: bind
+        source: ./logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
+    ports:
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx2g -Xms2g"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.9.2
-    container_name: kibana
-    depends_on: ['elasticsearch']
+    build:
+      context: kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
     ports:
       - "5601:5601"
     networks:
-      - esnet
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.9.2
-    container_name: logstash
-    depends_on: ['elasticsearch']
-    ports:
-      - "5000:5000"
-    networks:
-      - esnet      
-  
-  # cerebro:
-  #   image: 'lmenezes/cerebro'
-  #   container_name: cerebro
-  #   ports:
-  #     - '9000:9000'
-  #   networks:
-  #     - esnet
-
-  # headPlugin:
-  #   image: 'mobz/elasticsearch-head:5'
-  #   container_name: head
-  #   ports:
-  #     - '9100:9100'
-  #   networks:
-  #     - esnet
+      - elk
+    depends_on:
+      - elasticsearch
 
 networks:
-  esnet:
+  elk:
+    driver: bridge
+
+volumes:
+  elasticsearch:
+
+# services:
+#   elasticsearch:
+#     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+#     container_name: elasticsearch
+#     environment:
+#       - cluster.name=docker-cluster
+#       - discovery.type=single-node
+#       - bootstrap.memory_lock=true
+#       - http.cors.enabled=true
+#       - http.cors.allow-origin=*
+#       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+#       - xpack.ml.enabled=false      
+#     ulimits:
+#       memlock:
+#         soft: -1
+#         hard: -1
+#     ports:
+#       - 9200:9200
+#     networks:
+#       - esnet
+
+#   kibana:
+#     image: docker.elastic.co/kibana/kibana:7.9.2
+#     container_name: kibana
+#     depends_on: ['elasticsearch']
+#     ports:
+#       - "5601:5601"
+#     networks:
+#       - esnet
+
+#   logstash:
+#     image: docker.elastic.co/logstash/logstash:7.9.2
+#     container_name: logstash
+#     depends_on: ['elasticsearch']
+#     ports:
+#       - "5000:5000"
+#     networks:
+#       - esnet      
+  
+#   # cerebro:
+#   #   image: 'lmenezes/cerebro'
+#   #   container_name: cerebro
+#   #   ports:
+#   #     - '9000:9000'
+#   #   networks:
+#   #     - esnet
+
+#   # headPlugin:
+#   #   image: 'mobz/elasticsearch-head:5'
+#   #   container_name: head
+#   #   ports:
+#   #     - '9100:9100'
+#   #   networks:
+#   #     - esnet
+
+# networks:
+#   esnet:
 
 
 
